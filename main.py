@@ -107,18 +107,18 @@ def search_shortest_path(start_path, flip_type, name_prefix, temperature = 100, 
 
 
         ######Grafikausgabe#####
-        if steps % (city_count*100) == 0:
+        if steps % (city_count*1000) == 0:
 
-            runtime = time.time() - starttime
+            #runtime = time.time() - starttime
 
-            path_history_entry = []
-            path_history_entry.append(int(calc_cost(path, distance_lookup_table)))
-            path_history_entry.append(temperature)
-            path_history_entry.append(runtime)
+            #path_history_entry = []
+            #path_history_entry.append(int(calc_cost(path, distance_lookup_table)))
+            #path_history_entry.append(temperature)
+            #path_history_entry.append(runtime)
 
-            path_history_entry.append(path)
+            #path_history_entry.append(path)
 
-            path_history.append(path_history_entry)
+            #path_history.append(path_history_entry)
 
             print(
                 "Entfernung: " + str(int(calc_cost(path, distance_lookup_table))) + " km " + str(temperature) + " step " + str(steps)+"-"+str(math.exp(-10/temperature)))
@@ -147,14 +147,17 @@ def search_shortest_path(start_path, flip_type, name_prefix, temperature = 100, 
 
 
 
-        file_name = str(name_prefix)+"_"+flip_type+"_c"+str(cooling_factor)+".dat"
+    #file_name = str(name_prefix)+"_"+flip_type+"_c"+str(cooling_factor)+".dat"
 
-        with open(file_name, 'w', newline='\n') as myfile:
-            wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-            wr.writerow(path_history)
+    #with open(file_name, 'w', newline='\n') as myfile:
+    #    wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+    #    wr.writerow(path_history)
+
+    with open('toplist.dat', 'a') as f:
+        f.write(str(fav_length) + ";" + str(fav_time) + ";"+flip_type+";"+str(cooling_factor)+";" + str(fav_path) + "\n")
 
 
 for i in range(0,3):
 
-    search_shortest_path(path, "swap_random", i, temperature=100, cooling_factor=0.9, break_p = 0.85)
+    search_shortest_path(path, "swap_random", i, temperature=70, cooling_factor=0.99, break_p = 0.01)
 
