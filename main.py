@@ -90,7 +90,7 @@ while not done:
     ######Grafikausgabe#####
     if steps % 7500 == 0:
 
-        print("Entfernung: " + str(int(calc_cost(path, distance_lookup_table))) + " km "+str(t))
+        print("Entfernung: " + str(int(calc_cost(path, distance_lookup_table))) + " km "+str(t) + " step " + str(steps))
 
         for key,val in enumerate(cities):
             #print(key)
