@@ -3,7 +3,7 @@ import itertools
 import csv
 from functions import *
 
-t = 1000
+t = 70
 steps = 0
 success_counter = 0
 
@@ -59,7 +59,7 @@ while not done:
 
     #Temperatur wird nach 7500 Veränderungen des path oder nach 750 erfolgreichen Veränderungen, bei denen der Weg verringert wurde, verringert
     if steps % 7500 == 0 or success_counter == 750: 
-        t *= 0.999
+        t *= 0.99
         success_counter = 0
 
     screen.fill((0,0,0))
@@ -69,7 +69,7 @@ while not done:
     #Vergleich alter und neuer Pfad
     old_path = path.copy()
     cost_old_path = calc_cost(old_path, distance_lookup_table)
-    new_path = swap_row(path.copy())
+    new_path = revert_part(path.copy())
     cost_new_path = calc_cost(new_path, distance_lookup_table)
     
     delta_e = cost_new_path - cost_old_path
@@ -88,7 +88,7 @@ while not done:
     steps += 1
     
     ######Grafikausgabe#####
-    if steps % 1000 == 0:
+    if steps % 7500 == 0:
 
         print("Entfernung: " + str(int(calc_cost(path, distance_lookup_table))) + " km "+str(t))
 

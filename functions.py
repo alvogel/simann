@@ -50,11 +50,31 @@ def swap_row(old_path): #erstellt neuen Weg, indem die Position von zwei zufäll
     return old_path
 
 def swap_random(old_path): #erstellt neuen Weg, indem die Position von zwei zufällig ausgewählten Städten in der Liste getauscht werden
+    rand_pos1 = random.randint(0,len(old_path)-1)
+    rand_pos2 = random.randint(0,len(old_path)-1)
+    
+    value1 = old_path[rand_pos1]
+    
+    old_path[rand_pos1] = old_path[rand_pos2]
+    old_path[rand_pos2] = value1
+    
     return old_path
 
 def revert_part(old_path): #erstellt neuen Weg, indem ein Stück des Weges zwischen zwei zufällig ausgewählten Städten umgedreht wird
+    rand_pos1 = random.randint(0,len(old_path)-1)
+    rand_pos2 = random.randint(0,len(old_path)-1)
+    
+    if rand_pos1 < rand_pos2:
+        step_direction = 1
+    else:
+        step_direction = -1
+    
+    path_in_between_reversed = list(reversed(old_path[rand_pos1:rand_pos2:step_direction]))
+    
+    old_path[rand_pos1:rand_pos2:step_direction] = path_in_between_reversed
+    
     return old_path
-
+    
 ###### grafic output ######
 def coord_to_screen(lat_n, lat_e, max_e, min_e, min_n, max_n): #rechnet Längen/Breitengrade in x- und y-Koordinaten um
 
