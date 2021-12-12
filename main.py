@@ -5,6 +5,7 @@ import itertools
 import csv
 from functions import *
 import time
+import sys
 
 cities = []  # will have following structure: [['Aachen', 50.77611111111111, 6.084444444444444], ['Augsburg', 48.37222222222222, 10.9]....]
 
@@ -50,17 +51,25 @@ pygame.init()
 screen = pygame.display.set_mode((600, 670))
 
 
-def search_shortest_path(start_path, flip_type, name_prefix, temperature = 100, cooling_factor = 0.9, break_p = 0.01):
+def search_shortest_path(start_path, flip_type, name_prefix, start_temperature = 100, cooling_factor = 0.9, break_p = 0.01):
 
+    temperature = start_temperature
     city_count = len(start_path)
     fav_length = 9999999
     fav_path = []
     fav_time = 0
+    fav_step = 0
     starttime = time.time()
-    path_history = []
+    #path_history = []
     path = start_path
     steps = 0
     success_counter = 0
+    
+    file_name_history = str(name_prefix)+"_history_"+ flip_type +"_c"+ str(cooling_factor) + "_breakp_" + str(break_p) + "_starting_temp_"+ str(start_temperature) +".txt"
+    file_name_fav = "fav_"+flip_type+"_c"+str(cooling_factor)+"_breakp_"+ str(break_p) + "_starting_temp_"+ str(start_temperature) + ".txt"
+    
+    data_history = open(file_name_history,'w')
+    data_history.write("[")
 
     while math.exp(-10/temperature) > break_p:
 
@@ -99,6 +108,7 @@ def search_shortest_path(start_path, flip_type, name_prefix, temperature = 100, 
             fav_length = cost_new_path
             fav_path = path
             fav_time = time.time() - starttime
+            fav_step = steps
 
         #print("fav: "+str(fav_length)+" km")
 
@@ -111,15 +121,19 @@ def search_shortest_path(start_path, flip_type, name_prefix, temperature = 100, 
 
             runtime = time.time() - starttime
 
+            ###Abspeichern der Path_history in einer txt datei
             path_history_entry = []
             path_history_entry.append(int(calc_cost(path, distance_lookup_table)))
             path_history_entry.append(temperature)
             path_history_entry.append(runtime)
-
+            path_history_entry.append(steps)
             path_history_entry.append(path)
 
-            path_history.append(path_history_entry)
-
+            #path_history.append(path_history_entry)
+            
+            data_history.write("\n" + str(path_history_entry) + ",")
+    
+    
             print(
                 "Entfernung: " + str(int(calc_cost(path, distance_lookup_table))) + " km " + str(temperature) + " step " + str(steps)+"-"+str(math.exp(-10/temperature)))
 
@@ -144,17 +158,31 @@ def search_shortest_path(start_path, flip_type, name_prefix, temperature = 100, 
                                      coord_to_screen(cities[second][1], cities[second][2], max_e, min_e, min_n, max_n))
 
             pygame.display.flip()
+            
+            for evt in pygame.event.get():
+                if evt.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
 
 
+        
 
-        file_name = str(name_prefix)+"_"+flip_type+"_c"+str(cooling_factor)+".dat"
+    ######writing down whole path_history######
+    data_history.write("]")
+    data_history.close()
+    
+    data_fav = open(file_name_fav,'a')
+    data_fav_entry = "[" + str(fav_length) + ","  + str(fav_time) + "," + str(fav_step) + "," + str(time.ctime()) + "," + str(fav_path) + "],"
+    data_fav.write("\n" + data_fav_entry)
+    data_fav.close()
 
-        with open(file_name, 'w', newline='\n') as myfile:
-            wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-            wr.writerow(path_history)
 
-
-for i in range(0,3):
-
-    search_shortest_path(path, "swap_random", i, temperature=100, cooling_factor=0.9, break_p = 0.85)
-
+for i in range(0,5):
+    temperature = 70
+    flip_type = "revert_part"
+    cooling_factor = [0.8,0.8,0.8,0.85,0.85,0.85]
+    break_p = 0.01 #gibt Bedingung, an der die Schleife aufhören soll nach einem kürzeren Weg zu suchen; Wenn die Wkeit bei einer Wegänderung von 10km diesen Pfad anzunehmen unter break_p liegt, dann hört das Programm auf
+    
+    search_shortest_path(path, flip_type, i, start_temperature=temperature, cooling_factor=cooling_factor[i], break_p = break_p)
+    
+    cooling_factor = cooling_factor 
