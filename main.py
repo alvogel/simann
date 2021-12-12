@@ -117,9 +117,10 @@ def search_shortest_path(start_path, flip_type, name_prefix, start_temperature =
 
 
         ######Grafikausgabe#####
-        if steps % (city_count*100) == 0:
+        if steps % (city_count*1000) == 0:
 
-            runtime = time.time() - starttime
+            #runtime = time.time() - starttime
+
 
             ###Abspeichern der Path_history in einer txt datei
             path_history_entry = []
@@ -132,7 +133,6 @@ def search_shortest_path(start_path, flip_type, name_prefix, start_temperature =
             #path_history.append(path_history_entry)
             
             data_history.write("\n" + str(path_history_entry) + ",")
-    
     
             print(
                 "Entfernung: " + str(int(calc_cost(path, distance_lookup_table))) + " km " + str(temperature) + " step " + str(steps)+"-"+str(math.exp(-10/temperature)))
@@ -186,3 +186,4 @@ for i in range(0,5):
     search_shortest_path(path, flip_type, i, start_temperature=temperature, cooling_factor=cooling_factor[i], break_p = break_p)
     
     cooling_factor = cooling_factor 
+
