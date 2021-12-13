@@ -1,5 +1,5 @@
 import math
-
+import json 
 import pygame
 import itertools
 import csv
@@ -60,16 +60,11 @@ def search_shortest_path(start_path, flip_type, name_prefix, start_temperature =
     fav_time = 0
     fav_step = 0
     starttime = time.time()
-    #path_history = []
+    path_history = []
     path = start_path
     steps = 0
     success_counter = 0
     
-    file_name_history = str(name_prefix)+"_history_"+ flip_type +"_c"+ str(cooling_factor) + "_breakp_" + str(break_p) + "_starting_temp_"+ str(start_temperature) +".txt"
-    file_name_fav = "fav_"+flip_type+"_c"+str(cooling_factor)+"_breakp_"+ str(break_p) + "_starting_temp_"+ str(start_temperature) + ".txt"
-    
-    data_history = open(file_name_history,'w')
-    data_history.write("[")
 
     while math.exp(-10/temperature) > break_p:
 
@@ -121,7 +116,7 @@ def search_shortest_path(start_path, flip_type, name_prefix, start_temperature =
 
             runtime = time.time() - starttime
 
-            ###Abspeichern der Path_history in einer txt datei
+            ###Abspeichern der Path_history
             path_history_entry = []
             path_history_entry.append(int(calc_cost(path, distance_lookup_table)))
             path_history_entry.append(temperature)
@@ -129,9 +124,8 @@ def search_shortest_path(start_path, flip_type, name_prefix, start_temperature =
             path_history_entry.append(steps)
             path_history_entry.append(path)
 
-            #path_history.append(path_history_entry)
+            path_history.append(path_history_entry)
             
-            data_history.write("\n" + str(path_history_entry) + ",")
     
     
             print(
@@ -168,21 +162,26 @@ def search_shortest_path(start_path, flip_type, name_prefix, start_temperature =
         
 
     ######writing down whole path_history######
-    data_history.write("]")
-    data_history.close()
+    file_name_history = str(name_prefix)+"_history_"+ flip_type +"_c"+ str(cooling_factor) + "_breakp_" + str(break_p) + "_starting_temp_"+ str(start_temperature) +".json"
+    with open(file_name_history,"w") as write:
+        json.dump(path_history,write)
+    write.close()
     
-    data_fav = open(file_name_fav,'a')
-    data_fav_entry = "[" + str(fav_length) + ","  + str(fav_time) + "," + str(fav_step) + "," + str(time.ctime()) + "," + str(fav_path) + "],"
-    data_fav.write("\n" + data_fav_entry)
-    data_fav.close()
+    
+    file_name_fav = "fav_"+flip_type+"_c"+str(cooling_factor)+"_breakp_"+ str(break_p) + "_starting_temp_"+ str(start_temperature) + ".json"
+    data_fav_entry = [fav_length,fav_time,fav_step,time.ctime(),fav_path]
+    with open(file_name_fav,"a") as write:
+        json.dump(data_fav_entry,write)
+    write.close()
+    
 
 
-for i in range(0,5):
+for i in range(0,60):
     temperature = 70
-    flip_type = "revert_part"
-    cooling_factor = [0.8,0.8,0.8,0.85,0.85,0.85]
+    flip_type1 = "revert_part"
+    flip_type2 = "swap_random"
+    cooling_factor = 0.85
     break_p = 0.01 #gibt Bedingung, an der die Schleife aufhören soll nach einem kürzeren Weg zu suchen; Wenn die Wkeit bei einer Wegänderung von 10km diesen Pfad anzunehmen unter break_p liegt, dann hört das Programm auf
     
-    search_shortest_path(path, flip_type, i, start_temperature=temperature, cooling_factor=cooling_factor[i], break_p = break_p)
-    
-    cooling_factor = cooling_factor 
+    search_shortest_path(path, flip_type1, i, start_temperature=temperature, cooling_factor=cooling_factor, break_p = break_p)
+    search_shortest_path(path, flip_type2, i, start_temperature=temperature, cooling_factor=cooling_factor, break_p = break_p)
