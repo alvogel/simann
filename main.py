@@ -186,3 +186,5 @@ for i in range(0,60):
     
     search_shortest_path(path, flip_type1, i, start_temperature=temperature, cooling_factor=cooling_factor, break_p = break_p)
     search_shortest_path(path, flip_type2, i, start_temperature=temperature, cooling_factor=cooling_factor, break_p = break_p)
+
+
