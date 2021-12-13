@@ -172,6 +172,7 @@ def search_shortest_path(start_path, flip_type, name_prefix, start_temperature =
     data_fav_entry = [fav_length,fav_time,fav_step,time.ctime(),fav_path]
     with open(file_name_fav,"a") as write:
         json.dump(data_fav_entry,write)
+        write.write("\n")
     write.close()
     
 
